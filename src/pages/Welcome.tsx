@@ -1,52 +1,70 @@
 import React from 'react'
-import { SafeAreaView, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { SafeAreaView, Text, StyleSheet, Image, Dimensions, View } from 'react-native'
+import {useNavigation} from '@react-navigation/core'
 
 
 import colors from '../styles/colors'
 import wateringImg from '../assets/watering.png'
 
-import {Button} from '../component/Button'
+import { Button } from '../component/Button'
+import fonts from '../styles/fonts'
 
 
 
 export function Welcome () {
+    const navigation = useNavigation()
+
+    function hanldeStart () {
+        navigation.navigate('UserIdentification')
+    }
+
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>
-                Gerencie {`\n`} 
-                suas plantas{`\n`} 
-                de forma fácil
-            </Text>
-            <Image source={wateringImg} />
-            <Text style={styles.subTitle}>Não esqueça mais de regar suas plantas. Nós cuidamos de lembrar você
-sempre que precisar.</Text>
-            
-            <Button label={'Início'} />
+            <View style={styles.wrapper}>
+                <Text style={styles.title}>
+                    Gerencie {`\n`} 
+                    suas plantas{`\n`} 
+                    de forma fácil
+                </Text>
+                <Image
+                    source={wateringImg}
+                    style={styles.image}  
+                    resizeMode="contain"/>
+                <Text style={styles.subTitle}>Não esqueça mais de regar suas plantas. Nós cuidamos de lembrar você
+    sempre que precisar.</Text>
+                <Button label={'Início'} onPress={hanldeStart}  />
+            </View>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'center',
-        backgroundColor: '#fff',
         flex: 1,
-        justifyContent: 'space-between',
-        marginTop: 30
+    },
+    wrapper:{
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'space-around',
+        paddingHorizontal: 20
     },
     title: {
+        color: colors.heading,
+        fontFamily: fonts.heading,
         fontSize: 32,
         fontWeight: 'bold',
-        color: colors.heading,
         paddingHorizontal: 20,
         textAlign: 'center',
   },
   subTitle: {
+      color: colors.heading,
+      fontFamily: fonts.text,
       fontSize: 18,
       textAlign: 'center',
-      color: colors.heading,
   },
+  image: {  
+    height: Dimensions.get('window').width * 0.7
+  }, 
   button: {
       alignItems: 'center',
       borderRadius: 16,
