@@ -8,8 +8,10 @@ import {
     KeyboardAvoidingView,
     TouchableWithoutFeedback, 
     Platform, 
-    Keyboard} from 'react-native'
+    Keyboard,
+    Alert} from 'react-native'
 import {useNavigation} from '@react-navigation/core'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { Button } from '../component/Button'
 
@@ -39,8 +41,16 @@ export function UserIdentification () {
 
     const navigation = useNavigation()
 
-    function hanldeSubmit () {
-        navigation.navigate('Confirmation')
+    async function hanldeSubmit () {
+        if(!name) 
+            return Alert.alert('Por favor, digite o seu nome')
+        try {
+            await AsyncStorage.setItem('@plantmanager:user', name)
+            navigation.navigate('Confirmation')
+            
+        } catch {
+            Alert.alert('Não foi possível salvar o seu nome')
+        }
     }
     return (
         <SafeAreaView style={styles.container}>

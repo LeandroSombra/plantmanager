@@ -4,43 +4,33 @@ import colors from '../styles/colors'
 
 import { Header } from '../component/Header'
 import fonts from '../styles/fonts'
-import { EnviromentButton } from '../component/EnviromentButton'
+import { EnvironmentButton } from '../component/EnvironmentButton'
 import { PlantCardPrimary } from '../component/PlantCardPrimary'
 import api from '../services/api'
 import {Load} from '../component/Load'
+import { useNavigation } from '@react-navigation/core'
+import { PlantProps } from '../libs/storage'
 
-interface EnviromentProps {
+interface EnvironmentProps {
     key: string;
     title: string;
 }
 
-interface PlantsProps {
-    id: string,
-    name: string,
-    about: string,
-    water_tips: string,
-    photo: string,
-    environments: [string],
-    frequency: {
-      times: number,
-      repeat_every: string
-    }
-}
-
 
 export function PlantSelect () {
-    const [enviroments, setEnviroments] = useState<EnviromentProps[]>([])
-    const [plants, setPlants] = useState<PlantsProps[]>([])
-    const [enviromentSelected, setEnviromentSelected] = useState('all')
+    const [environments, setEnvironments] = useState<EnvironmentProps[]>([])
+    const [plants, setPlants] = useState<PlantProps[]>([])
+    const [environmentSelected, setEnvironmentSelected] = useState('all')
     const [filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([])
     const [loading, setLoading] = useState(true)
 
     const [page, setPage] = useState(1)
     const [loadingMore, setLoadingMore] = useState(false)
     const [loadedAll, setLoadedAll] = useState(false)
+    const navigation = useNavigation();
 
-    function handleEnviromentSelected(enviroment: string) {
-        setEnviromentSelected(enviroment)
+    function handleEnvironmentSelected(enviroment: string) {
+        setEnvironmentSelected(enviroment)
 
         if(enviroment === 'all')
             return setFilteredPlants(plants)
@@ -52,8 +42,14 @@ export function PlantSelect () {
         setFilteredPlants(filtered)
     }
 
+
+    function handlePlantSelect(plant: PlantsProps) {
+        navigation.navigate('PlantSave', { plant })
+        
+    }
+
     async function fetchPlants() {
-        const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=2`)
+        const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
 
         if(!data)
             return setLoading(true)
@@ -81,10 +77,10 @@ export function PlantSelect () {
     }
 
     useEffect(() => {
-        async function fetchEnviroment() {
+        async function fetchEnvironment() {
             const { data } = await api.get('plants_environments?_sort=title&_order=asc')
 
-            setEnviroments([
+            setEnvironments([
                 {
                     key: 'all',
                     title: 'Todos'
@@ -93,7 +89,7 @@ export function PlantSelect () {
             ])
         }
 
-        fetchEnviroment()
+        fetchEnvironment()
     }, [])
 
     useEffect(() => {
@@ -113,23 +109,27 @@ export function PlantSelect () {
             </View>
             <View>
                 <FlatList 
-                    data={enviroments}
+                    data={environments}
+                    keyExtractor={(item) => item.key}
                     renderItem={({ item }) => (
-                        <EnviromentButton 
+                        <EnvironmentButton 
                             title={item.title}
-                            active={item.key === enviromentSelected}
-                            onPress={() => handleEnviromentSelected(item.key)} />
+                            active={item.key === environmentSelected}
+                            onPress={() => handleEnvironmentSelected(item.key)} />
                     )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.enviromentList}
+                    contentContainerStyle={styles.environmentList}
                 />
             </View>
             <View style={styles.plants}>
                 <FlatList 
                     data={filteredPlants}
+                    keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
-                        <PlantCardPrimary data={item} />
+                        <PlantCardPrimary 
+                            data={item}
+                            onPress={() => handlePlantSelect(item)} />
                     )}
                     showsVerticalScrollIndicator={false}
                     numColumns={2}
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         lineHeight: 20,
     },
-    enviromentList: {
+    environmentList: {
         justifyContent: 'center',
         height: 40,
         marginLeft: 32,

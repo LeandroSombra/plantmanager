@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.shape,
         borderRadius: 10,
         flex: 1,
-        height: 600,
         justifyContent: 'center',
         maxWidth: '45%',
         margin: 10,
